@@ -1,0 +1,103 @@
+<body>
+  <script>
+    // input - single string of numbers delimited by a comma for a list or 
+    //    by a colon, ellipsis, or dash to represent a range,
+    //   shorthand numbers show only significant digits
+    //   the entire list is a range in that it starts from low to high
+    //   each item separated by commas is a range, but if there are two numbers with a
+    // colon, dash or ellipsis in between ---> full range,  if its just one number it's the high number of the range.
+    
+    // output - a complete list of numbers (array)
+    
+    // build a function that will return a full range from a starting number and a number that is possibly just a significant digit.
+    //   -- build a regex value to test for the sig dig
+    //   -- add numbers to the range until the added number matches the sig dig
+    //   -- return the full range
+    // restructure data structures:
+    //.  -- split by comma -- map to numbers (if number) map to number arrays if arrays
+    //   -- resulting structure will be an array of numbers and arrays (which signify ranges)
+    // focus on the first element in the series.
+    //   -- if its an array -- push the expanded array into the result array
+    //  -- if its a number -- push the number into the result array
+    // continue iterating -- treat each step as a range 
+    //.  -- send to range function and return the last value in the full range
+    //  -- if the next value is an array -- determine the first value in the array with the range function -- repeat action sending first value and the last value of the array to the range function.
+    
+    function fromTo(start, finish) {
+      var regex = getRegex(start, finish)
+      var result = [];
+      var i = Number(start);
+      
+      while (true) {
+        result.push(Number(i));
+        if (regex.test(String(i))) {
+          break
+        }
+        if (String(i + 1).length > String(i).length) {
+          regex = getRegex(String(i + 1), finish);
+        }
+        i += 1;
+      }
+      return result;
+    }
+    
+    function getRegex(num1, num2) {
+      let placeholder = '\\d'.repeat(num1.length - num2.length);
+      return new RegExp(placeholder + num2);
+    }
+    
+    function rangeLastValue(num1, num2) {
+      let range = fromTo(num1, num2);
+      return range[range.length - 1];
+    }
+    
+    function fullRange(array) {
+      var result = [];
+      
+      while (array.length > 1) {
+        result.push(...fromTo(array[0], array[1]));
+        array.shift();
+      }
+      return [...new Set(result)];  // unique array
+    }
+    
+    function convertToRangeArray(numString) {
+      var ellipsis = new RegExp('\\.\\.');
+
+      return numString.split(', ').map(function (element) {
+       if (/[:\-]/.test(element)) {
+         return element.split(/[:\-]/);
+       } else if (ellipsis.test(element)) {
+         return element.split(ellipsis);
+       } else {
+         return [element, element];
+       }
+     });
+    }
+    
+    function completeNumberList(numString) {
+      var rangeArray = convertToRangeArray(numString);
+      var result = fullRange(rangeArray[0]);
+
+      for (let i = 1; i < rangeArray.length; i += 1) {
+        let resultLastValue = String(result[result.length - 1]); 
+        let currentValue = rangeArray[i];
+        
+        let firstInRange = rangeLastValue(resultLastValue, currentValue[0]);
+        currentValue[0] = String(firstInRange);
+        result.push(...fullRange(currentValue));
+      }
+      return result
+    }
+
+    console.log(completeNumberList('1, 3, 7, 2, 4, 1'));
+    console.log(completeNumberList('1-3, 1-2'));  // [1, 2, 3, 11, 12]
+    console.log(completeNumberList('1:5:2'));  //  [1, 2, 3, 4, 5, 6, .. 12]
+    console.log(completeNumberList('104-2'));  // [104, 105, .. 112]
+    console.log(completeNumberList('104-02')); // [104, 105, .. 202]
+    console.log(completeNumberList('545, 64:11'));  // [545, 564, 565, .. 611]
+    console.log(completeNumberList('12..18'));  // [12, 13, 14, 15, 16, 17, 18]
+    console.log(completeNumberList('1005-03'));  // [1003, 1004, .. 1105]
+  </script>
+</body>
+

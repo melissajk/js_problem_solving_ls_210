@@ -1,0 +1,35 @@
+<body>
+  <script>
+    // phone number < 10 digits --> bad. 0000000000
+    // phone number = 10 digits ---> good
+    // phone number = 11 digits and the first number is one -- trim 1st number and use last 10
+    //phone number = 11 digits and the first number is not 1 -- bad number
+    // phone number > 11 digits ---> bad
+    
+    // input --> string
+    // output --> string
+    // replace '-.() ' with empty string. [^0-9]
+    // count how many digits remain. -- use phone # length rules -- return '0000000000' if the rules are violated.
+    // return the number
+    // Is it okay to mutate the original?
+    function cleanPhoneNumber(phoneNumber) {
+      var justNumbers = phoneNumber.replace(/[^0-9]/g, '');
+      
+      if (justNumbers.length === 11 && justNumbers[0] === '1') {
+        return justNumbers.slice(1);
+      } else if (justNumbers.length === 10) {
+        return justNumbers;
+      } else {
+        return '0000000000';
+      }
+    }
+    
+    console.log(cleanPhoneNumber('555.555.1234'));  // '5555551234'
+    console.log(cleanPhoneNumber('(123)456 789'));  // '0000000000'
+    console.log(cleanPhoneNumber('1(234)567-0920'));  // '2345670920'
+    console.log(cleanPhoneNumber('222333444455')); // '0000000000'
+    console.log(cleanPhoneNumber('1 (312) 555-56789')) // '0000000000'
+    
+  </script>
+</body>
+

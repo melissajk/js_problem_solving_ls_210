@@ -1,0 +1,92 @@
+<body>
+  <script>
+    
+    function encodeRFCipher(message, rails) {
+      var cleanedMessage = message.toUpperCase().replace(/[^a-z0-9]/gi, '');
+      var result;
+      
+      if (cleanedMessage === '' || rails < 1) {
+        return '';
+      }
+      
+      result = createRailsArray(cleanedMessage, rails);
+
+      return result.map((array) => array.join('')).join('');
+    }
+    
+    function createRailsArray(message, rails) {
+      var result = railArray(rails);
+      var cycle = cycleArray(rails);
+      
+      for (let i = 0; i < message.length; i += 1) {
+        let index = cycle[i % cycle.length];
+        result[index].push(message[i]);
+      }
+      return result;
+    }
+    
+    function railArray(rails) {
+      var result = [];
+      
+      for (let i = 0; i < rails; i += 1) {
+        result.push([]);
+      }
+      return result;
+    }
+    
+    function cycleArray(rails) {
+      var result = [];
+      
+      for (let i = 0; i < rails; i += 1) {
+        result.push(i);
+      }
+      return result.concat(result.slice(1, -1).reverse());
+    }
+    
+    console.log(encodeRFCipher('hello', 3)) // HOELL
+    console.log(encodeRFCipher('WE ARE DISCOVERED FLEE AT ONCE', 3)) //WECRLTEERDSOEEFEAOCAIVDEN
+    console.log(encodeRFCipher('', 3)) // ''
+    console.log(encodeRFCipher('555-3456', 2)) // 5546535
+    console.log(encodeRFCipher('AWESOME!!', 3)) // AOWSMEE
+    
+    // DECODING 
+    
+    // top row # chars = Math.floor(message.length / cycle.length) + 1
+    // middle rows # chars = Math.floor(message.length / 2)
+    // bottom row # chars = Math.floor(message.length / cycle.length)
+    
+    // split all chars into appopriate rows --> array of arrays
+    // use cycleArray to splice characters from the correct arrays.
+    
+    function decodeRFCipher(message, rails) {
+      var cycle = cycleArray(rails);
+      var messageArray = message.split('')
+      var decodedMessage = ''
+      var railsArray;
+      
+      if (message === '' || rails < 1) {
+        return decodedMessage;
+      }
+      
+      railsArray = createRailsArray(message, rails).map(function (array) {
+        return messageArray.splice(0, array.length);
+      });
+      
+      
+      for (let i = 0; i < message.length; i += 1) {
+        let index = cycle[i % cycle.length];
+        decodedMessage += railsArray[index].splice(0, 1);
+      }
+      return decodedMessage;
+    }
+    
+    console.log(decodeRFCipher('HOELL', 3));
+    console.log(decodeRFCipher('WECRLTEERDSOEEFEAOCAIVDEN', 3));
+    console.log(decodeRFCipher('WIREEEDSEEEACAECVDLTNROFO', 4))
+    console.log(decodeRFCipher('', 3));
+    console.log(decodeRFCipher('5546535', 2));
+    console.log(decodeRFCipher('AOWSMEE', 3));
+    
+  </script>
+</body>
+

@@ -1,0 +1,88 @@
+<body>
+  <script>
+    // input - string
+    // output - true or false depending on whether the word can be made with the blocks
+    // one side of the block one time
+    // letters --> case insensitive  string --> string.toUpperCase();
+    
+    // isBlockWord
+    // blocks { BO: 0, XK:0 ...} blocks.keys() --> BO: 1 
+    // check to make sure that the string ia all alpha characters
+    // string.toUpperCase();
+    // string.split('')  -- iterate through the characers
+    // blocks.keys() iterate through the blocks 
+    // if block.includes(char) --> block[key] += 1
+    // return false if block[key] > 1
+    // return true if all values are < 2
+    
+    // isBlockWord1
+    // blocks in an array
+    // check to make sure all of the characters in the word are alpha
+    // iterate through the characters in the string with a for loop
+    // use filter to find the block (block.indexOf(char) !== 1);
+    // return empty array ? false : splice the block out of the array
+    // if you exit the for loop -- return true
+    
+    
+    function isBlockWord(word) {
+      var blockCounts = {}
+      var blocks = ['BO', 'XK', 'DQ', 'CP', 'NA', 'GT', 'RE', 'FS', 'JW', 'HU', 'VI', 'LY', 'ZM']
+      var i;
+      
+      if (/[^a-z]/gi.test(word) || word === '') {
+        return false;
+      }
+      
+      word.toUpperCase().split('').forEach(function (char) {
+        for (i = 0; i < blocks.length; i += 1) {
+          if (blocks[i].includes(char)) {
+            blockCounts[blocks[i]] = blockCounts[blocks[i]] || 0;
+            blockCounts[blocks[i]] += 1;
+            break
+          }
+        }
+      });
+
+      return Object.values(blockCounts).every(function (count) {
+        return count < 2;
+      });
+    }
+    
+    
+    function isBlockWord1(word) {
+      var blocks = ['BO', 'XK', 'DQ', 'CP', 'NA', 'GT', 'RE', 'FS', 'JW', 'HU', 'VI', 'LY', 'ZM']
+      var i;
+      var matchingBlock;
+      var matchingBlockIndex;
+      
+      if (/[^a-z]/gi.test(word) || word === '') {
+        return false;
+      }
+      
+      for (i = 0; i < word.length; i += 1) {
+        matchingBlock = blocks.filter(function (block) {
+          return block.indexOf(word.toUpperCase()[i]) !== -1;
+        })[0];
+        if (matchingBlock === undefined) {
+          return false;
+        } else {
+          matchingBlockIndex = blocks.indexOf(matchingBlock);
+          blocks.splice(matchingBlockIndex, 1);
+        }
+      }
+      return true;
+    }
+    
+
+    console.log(isBlockWord1('BATCH')); // true
+    console.log(isBlockWord1('BUTCH')); // false
+    console.log(isBlockWord1('jest')); // true
+    console.log(isBlockWord1(''));  // false
+    console.log(isBlockWord1('123&*)')); // false
+    console.log(isBlockWord1('JJJ'));  // false
+    console.log(isBlockWord1('ACME'));  // true
+    console.log(isBlockWord1('ACNE'));  // false
+    console.log(isBlockWord1('BA T'));  // false
+  </script>
+</body>
+

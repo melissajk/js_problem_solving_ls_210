@@ -1,0 +1,78 @@
+<body>
+  <script>
+    // right to left double every other digit
+    // double > 10 ? --> subtract nine
+    // add all the digits together
+    // total % 10 === 0 ? valid
+    // ignore all non numeric (spaces etc)
+    // input --> string
+    // valid --> true invalid --> false
+    // How do you handle an empty string?  return false?
+    
+    // algorithm
+    // clear the string of non-numerica characters
+    // convert the string to an array and map the array to numbers
+    // reverse the array (left to right)
+    // iterate through the odd indexes doubling the numbers 
+        // if the number doubled > 10 --> 9
+    // reduce the array to single number
+    // value % 10 === 0
+    
+    function validLuhnNum(numberString) {
+      var justDigits = numberString.replace(/[^0-9]/g, '');
+      var checksum;
+
+      if (justDigits === '') {
+        return false
+      }
+      
+      checksum = justDigits.split('').reverse().map(function (digit, index) {
+        digit = Number(digit);
+        if (index % 2 === 1) {
+          return digit * 2 >= 10 ? (digit * 2) - 9 : digit * 2;
+        } else {
+          return digit;
+        }
+      }).reduce(function (acc, digit) {
+        return acc + digit;
+      });
+      return checksum % 10 === 0;
+    }
+    
+    console.log(validLuhnNum('2323 2005 7766 3554'));  // true
+    console.log(validLuhnNum('1111')); // false
+    console.log(validLuhnNum('8763'));  // true
+    console.log(validLuhnNum('&&cake ')) // false
+    console.log(validLuhnNum('0000')); // true <--- is this a special case?
+    console.log(validLuhnNum('87 63')) //true
+    console.log(validLuhnNum(''));  // false
+    console.log(validLuhnNum('18'))  // true
+    
+    // input = string of digits
+    // output = original # + check digit;
+    // if checksum valid ? return valid string
+    // if checksum invalid? try adding digits 0-9 until the checksum works
+    
+    function addCheckDigit(numberString) {
+      var testString;
+      var i;
+
+      if (validLuhnNum(numberString)) {
+        return numberString;
+      }
+      
+      for (i = 0; i < 10; i += 1) {
+        testString = numberString + String(i);
+        if (validLuhnNum(testString)) {
+          return testString;
+        }
+      }
+    }
+    
+    console.log(addCheckDigit('1111'));  // '11114' 
+    console.log(addCheckDigit('8763'));  //  '8763'
+    console.log(addCheckDigit('2222'));  //  '22228'
+    console.log(addCheckDigit('1')); //  '18'
+  </script>
+</body>
+
